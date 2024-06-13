@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true /* 跳过声明文件的类型检查. */,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "baseUrl": "./",
+    "paths": {
+      "@": ["src"], // 如果要使用index.tsx的，需要配置这个
+      "@/*": ["src/*"], // 要使用别名下的模块的，配置这个。
+      "@vant/*": ["src/components/vant/*"]
+    },
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": ["scripts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
