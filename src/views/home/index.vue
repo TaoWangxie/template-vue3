@@ -2,7 +2,12 @@
   <div class="container">{{ home }}</div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { ceshi } from "@/api/demo";
+
+onMounted(async ()=>{
+  await ceshi()
+})
 
 const home: any = ref("Home");
 </script>

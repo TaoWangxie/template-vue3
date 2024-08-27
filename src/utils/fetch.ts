@@ -1,21 +1,16 @@
 import axios from 'axios';
-import { baseUrl, appSecret } from '@/environment';
+import { baseUrl } from '@/environment';
 import { ElMessage } from 'element-plus';
-import { removeStore, getStore } from './storage';
-import { ACCESS_TOKEN, CLIENT_ID, USER_INFO } from './const';
-import {
-  getToken,
-  doLoginOut,
-} from '@/utils/micro';
+import { useUserStore } from "@/store/user";
+import { removeStore } from "@/utils/storage";
+const useUser = useUserStore();
+const ACCESS_TOKEN = 'authorization'
 
 axios.interceptors.request.use(
   (config: any) => {
     // 设置token
-    config.headers[CLIENT_ID] = appSecret;
-    config.headers[ACCESS_TOKEN] = getToken() || '';
-
+    config.headers[ACCESS_TOKEN] = useUser.getToken() || '';
     config.metadata = { startTime: new Date() };
-    // console.log(config.metadata);
     return config;
   },
   error => {
@@ -23,25 +18,24 @@ axios.interceptors.request.use(
   });
 
 export const responseHandler = function (data: any, resolve: any, reject: any, metadata: any) { // 公共响应码集中处理
-
+  let status = data.status;
   let code = data.code;
   code = Number.parseInt(`${code}`, 10);
-  if (code === 0 || code === 200) {
+  if (status) {
     resolve({ ...data, ...metadata });
     return;
   }
   switch (code) {
     case -101: // 请登录
     case 101:
-      removeStore(USER_INFO);
-      doLoginOut();
+      removeStore('userInfo');
+      useUser.doLogout();
       break;
     default:
-      ElMessage.error(data.message);
       break;
   }
-
-  reject(data.message)
+  ElMessage.error(data.msg);
+  reject(data.msg)
 };
 
 export const api = <E, O>(url = '', type: any = 'GET', headers: Record<string, any> = {}, responseType: any = 'json') => {
@@ -65,11 +59,11 @@ export const api = <E, O>(url = '', type: any = 'GET', headers: Record<string, a
       console.info('耗时：' + metadata.duration + ' ms');
       console.info(response.data);
       console.groupEnd();
-
-      if (headers.responseType  === 'json') { // 统一处理数据
+  
+      if (headers.responseType  === 'json' || response.headers['content-type'] === 'application/json; charset=utf-8') { // 统一处理数据
         responseHandler(response.data, resolve, reject, metadata);
       } else {
-        response.data?.code != "200" && ElMessage.error(response.data.message)
+        (!response.data?.status) && ElMessage.error(response.data.msg)
         resolve(response.data)
       }
     }).catch(function (error) {
@@ -80,9 +74,7 @@ export const api = <E, O>(url = '', type: any = 'GET', headers: Record<string, a
 
 
 const errorHandler = (url: any, resolve: any, reject: any, error: any) => {
-  //
   let metadata: any = {};
-
   let e: any = { code: '', message: '' };
   if (error.response) {
     metadata.duration = +new Date() - error.response.config.metadata.startTime;
@@ -96,6 +88,7 @@ const errorHandler = (url: any, resolve: any, reject: any, error: any) => {
 
     e.code = error.response.status;
     e.message = error.response.statusText;
+
     switch (e.code) { // 异常情况
       case 400:
         e.message = '请求信息有误';

@@ -1,7 +1,7 @@
-FROM nginx
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY dist/ /usr/share/nginx/html/
+# FROM nginx
+# RUN rm /etc/nginx/conf.d/default.conf
+# COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+# COPY dist/ /usr/share/nginx/html/
 # RUN rm /etc/nginx/conf.d/default.conf 删除目录下的default.conf文件
 
 #===================================
@@ -9,7 +9,8 @@ COPY dist/ /usr/share/nginx/html/
 FROM node:latest as builder 
 WORKDIR /app
 COPY package.json .
-RUN npm install   
+RUN npm config set registry https://registry.npmmirror.com/
+RUN npm install
 COPY . .
 RUN npm run build
 
