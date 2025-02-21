@@ -6,6 +6,8 @@ import { ref, onMounted } from "vue";
 import { ceshi } from "@/api/demo";
 
 onMounted(async ()=>{
+  console.log(import.meta.env.VITE_APP_TITLE);
+  console.log(import.meta.env.MODE);
   await ceshi()
 })
 
