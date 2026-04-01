@@ -30,7 +30,7 @@ export default ({ mode })=>defineConfig({
     })
   ],
   server: {
-    open: true,
+    open: false,
     host: "0.0.0.0",
     port: 5002,
   },
