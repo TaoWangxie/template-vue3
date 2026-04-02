@@ -42,7 +42,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ceshi } from '@/api/demo'
 
 const appTitle = ref(import.meta.env.VITE_APP_TITLE || 'template-vue3')
 const mode = ref(import.meta.env.MODE)
@@ -57,7 +56,6 @@ const features = [
 onMounted(async () => {
   console.log(appTitle.value)
   console.log(mode.value)
-  await ceshi()
 })
 </script>
 
